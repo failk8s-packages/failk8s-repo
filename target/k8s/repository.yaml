@@ -1,0 +1,10 @@
+apiVersion: packaging.carvel.dev/v1alpha1
+kind: PackageRepository
+metadata:
+  name: failk8s-repo.dev.failk8s.com
+  namespace: kapp-controller-packaging-global
+spec:
+  syncPeriod: 1m
+  fetch:
+    imgpkgBundle:
+      image: quay.io/failk8s/failk8s-repo:develop

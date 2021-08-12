@@ -1,0 +1,6 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: PackageMetadata
+metadata:
+  name: registry.dev.failk8s.com
+  namespace: kapp-controller-packaging-global
+spec: {}

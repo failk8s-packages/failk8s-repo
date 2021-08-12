@@ -1,0 +1,105 @@
+{
+    "repository": {
+        "name": "failk8s-repo",
+        "domain": "dev.failk8s.com",
+        "version": "develop"
+    },
+    "registry": "quay.io/failk8s",
+    "packages": [
+        {
+            "name": "cert-manager",
+            "displayName": "Cert Manager",
+            "versions": [
+                "develop",
+                "1.1.0",
+                "1.3.1",
+                "1.4.0"
+            ]
+        },
+        {
+            "name": "contour",
+            "displayName": "Contour",
+            "versions": [
+                "develop",
+                "1.10.0",
+                "1.15.0",
+                "1.16.0"
+            ]
+        },
+        {
+            "name": "certs",
+            "displayName": "Certificates for Development",
+            "versions": [
+                "develop",
+                "1.0.0"
+            ]
+        },
+        {
+            "name": "metallb",
+            "displayName": "MetalLB load Balancer",
+            "versions": [
+                "develop",
+                "1.0.0"
+            ]
+        },
+        {
+            "name": "secretcopier-operator",
+            "displayName": "Secret Copier Operator for Development",
+            "versions": [
+                "develop",
+                "1.0.0"
+            ]
+        },
+        {
+            "name": "external-dns",
+            "displayName": "external-DNS registration",
+            "versions": [
+                "develop",
+                "0.8.0"
+            ]
+        },
+        {
+            "name": "registry",
+            "displayName": "OCI Registry",
+            "versions": [
+                "develop",
+                "1.0.0"
+            ]
+        },
+        {
+            "name": "knative-serving",
+            "displayName": "KNative Serving",
+            "versions": [
+                "develop",
+                "0.22.0",
+                "0.24.0"
+            ]
+        },
+        {
+            "name": "testapp",
+            "displayName": "K8S test application",
+            "versions": [
+                "develop",
+                "1.0.0"
+            ]
+        },
+        {
+            "name": "testknativeapp",
+            "displayName": "Knative test application",
+            "versions": [
+                "develop",
+                "1.0.0"
+            ]
+        },
+        {
+            "name": "dev-platform",
+            "displayName": "Development platform",
+            "versions": [
+                "develop",
+                "1.0.0",
+                "1.0.1",
+                "1.0.2"
+            ]
+        }
+    ]
+}

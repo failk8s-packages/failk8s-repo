@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+    BASE_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+    SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+BASE_DIR="$( cd -P "$( dirname "$SOURCE" )/.." && pwd )"
+
+CONFIG_FILE=${CONFIG_FILE:-"$BASE_DIR/config.json"}
+
+_registry=$(cat $CONFIG_FILE | jq -r '.registry')
+_name=$(cat $CONFIG_FILE | jq -r '.package.name')
+_version=$(cat $CONFIG_FILE | jq -r '.package.version')
+
+_list_packages=$(cat $CONFIG_FILE | jq -r '.packages[] | .versions[] as $item | "\(.name)/\($item)#\(.name)#\($item)"')
+
+TMPFILE=""
+VALUEFILE=""
+temp=$(basename $0)
+
+function create_package_valuesfile {
+    TMPDIR=$(mktemp -d)
+    VALUEFILE="$TMPDIR"/data-value.yaml
+    touch $VALUEFILE
+    echo "packages:" >>  $VALUEFILE
+    echo "  - name: $1" >>  $VALUEFILE
+    echo "    versions:" >>  $VALUEFILE
+    echo "      - $2" >>  $VALUEFILE
+}
+
+function delete_package_valuesfile {
+    rm -rf $VALUEFILE
+}
+
+function package_all {
+    for package in $_list_packages
+    do
+        echo "package_one $(echo $package | tr '#' ' ')"
+        package_one $(echo $package | tr "#" " ")
+    done
+}
+
+function package_one {
+    local _packageNV=$1
+    local _name=$2
+    local _version=$3
+
+    create_package_valuesfile $_name $_version
+    # Create packages
+    mkdir -p $BASE_DIR/target/bundle/packages/$_name
+    ytt --data-values-file $CONFIG_FILE --data-values-file $VALUEFILE -f $BASE_DIR/src/templates/packagemetadata.yaml --output-files $BASE_DIR/target/bundle/packages/$_name --ignore-unknown-comments
+
+    # Create package versions
+    ytt --data-values-file $CONFIG_FILE --data-values-file $VALUEFILE -f $BASE_DIR/src/templates/package.yaml --output-files $BASE_DIR/target/bundle/packages/$_name --ignore-unknown-comments
+    mv $BASE_DIR/target/bundle/packages/$_name/package.yaml $BASE_DIR/target/bundle/packages/$_name/$_name-$_version.yaml
+
+    delete_package_valuesfile
+}
+
+function build {
+    # Create bundle in target with processed files
+    rm -rf $BASE_DIR/target && mkdir -p $BASE_DIR/target
+
+    echo "Creating package metadata files:"
+    package_all
+
+    echo "Creating repository definition:"
+    mkdir -p $BASE_DIR/target/k8s
+    mkdir -p $BASE_DIR/target/bundle/.imgpkg/
+    ytt --data-values-file $CONFIG_FILE -f $BASE_DIR/src/templates/repository.yaml --ignore-unknown-comments > $BASE_DIR/target/k8s/repository.yaml
+    ytt --data-values-file $CONFIG_FILE -f $BASE_DIR/src/templates/images.yml --ignore-unknown-comments > $BASE_DIR/target/bundle/.imgpkg/images.yml
+
+    echo "============"
+    echo "Push to test the changes"
+}
+
+function push {
+    # Create imgpkgBundle
+    echo "Updating package: $_name:$_version"
+    if [[ "$_version" != "develop" ]]
+    then
+        kbld -f $BASE_DIR/target/bundle --imgpkg-lock-output $BASE_DIR/target/bundle/.imgpkg/images.yml
+    else
+        echo "Not locking images as we're in develop branch"
+    fi
+    imgpkg push --bundle $_registry/$_name-package:$_version --file $BASE_DIR/target/bundle/
+
+    echo "============"
+    echo "Now you can test your package"
+    echo ""
+    echo "deploy your package:"
+    echo "      kubectl apply -f $BASE_DIR/target/k8s"
+    echo "test your package:"
+    echo "      kubectl apply -f $BASE_DIR/target/test"
+    echo "Watch progress"
+    echo "      watch kubectl get packageinstall $_name-package -n $_name-package"
+}
