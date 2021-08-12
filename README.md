@@ -36,31 +36,31 @@ See up to date instructionns in [dev-platform](https://github.com/failk8s-packag
    apiVersion: v1
    kind: Namespace
    metadata:
-   name: dev-platform
+     name: dev-platform
    ---
    apiVersion: v1
    kind: ServiceAccount
    metadata:
-   name: dev-platform
-   namespace: dev-platform
+     name: dev-platform
+     namespace: dev-platform
    ---
    apiVersion: rbac.authorization.k8s.io/v1
    kind: ClusterRoleBinding
    metadata:
-   name: dev-platform
+     name: dev-platform
    roleRef:
-   apiGroup: rbac.authorization.k8s.io
-   kind: ClusterRole
-   name: cluster-admin
+     apiGroup: rbac.authorization.k8s.io
+     kind: ClusterRole
+     name: cluster-admin
    subjects:
    - kind: ServiceAccount
-      name: dev-platform
-      namespace: dev-platform
-   EOF 
+     name: dev-platform
+     namespace: dev-platform
+   EOF
    ```
 2. Create the config for your cluster
    ```
-   kubectl create secret generic dev-platform -n dev-platform --from-file=values.yaml=./profiles/override-jomorales.yaml -o yaml --dry-run=client | kubectl apply -f -
+   kubectl create secret generic dev-platform -n dev-platform --from-file=values.yaml=./profiles/override-minikube.yaml -o yaml --dry-run=client | kubectl apply -f -
    ```
 3. Install the package
    ```
@@ -69,16 +69,20 @@ See up to date instructionns in [dev-platform](https://github.com/failk8s-packag
    apiVersion: packaging.carvel.dev/v1alpha1
    kind: PackageInstall
    metadata:
-   name: dev-platform
+      name: dev-platform
    spec:
-   serviceAccountName: dev-platform
-   packageRef:
-      refName: dev-platform.dev.failk8s.com
-      versionSelection:
-         constraints: "0.0.0+develop"
-         prereleases: {}
-   values:
-   - secretRef:
-         name: dev-platform
+      serviceAccountName: dev-platform
+      packageRef:
+         refName: dev-platform.dev.failk8s.com
+         versionSelection:
+            constraints: "0.0.0+develop"
+            prereleases: {}
+      values:
+      - secretRef:
+            name: dev-platform
    EOF
    ```
+4. Watch the package being installed
+   ```
+   watch kubectl get packageinstall -A
+   ``` 
