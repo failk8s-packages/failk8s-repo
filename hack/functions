@@ -13,8 +13,8 @@ BASE_DIR="$( cd -P "$( dirname "$SOURCE" )/.." && pwd )"
 CONFIG_FILE=${CONFIG_FILE:-"$BASE_DIR/config.json"}
 
 _registry=$(cat $CONFIG_FILE | jq -r '.registry')
-_name=$(cat $CONFIG_FILE | jq -r '.package.name')
-_version=$(cat $CONFIG_FILE | jq -r '.package.version')
+_name=$(cat $CONFIG_FILE | jq -r '.repository.name')
+_version=$(cat $CONFIG_FILE | jq -r '.repository.version')
 
 _list_packages=$(cat $CONFIG_FILE | jq -r '.packages[] | .versions[] as $item | "\(.name)/\($item)#\(.name)#\($item)"')
 
@@ -87,7 +87,7 @@ function push {
     else
         echo "Not locking images as we're in develop branch"
     fi
-    imgpkg push --bundle $_registry/$_name-package:$_version --file $BASE_DIR/target/bundle/
+    imgpkg push --bundle $_registry/$_name:$_version --file $BASE_DIR/target/bundle/
 
     echo "============"
     echo "Now you can test your package"

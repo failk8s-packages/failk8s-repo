@@ -7,9 +7,9 @@
    ```
    NOTE: This will create a `develop` version of the repository.
 3. When you're fine, release the repository, and version properly (use `git flow release <VERSION>`).
-   Generate all teh descriptors and packages in the OCI registry.
+   Generate all the descriptors and packages in the OCI registry.
    ```
-   ./update.sh package-all --release
+   ./hack/push.sh
    ```
 4. Get ready for next version
 
@@ -25,7 +25,9 @@
    kubectl apply -f target/k8s/repository.yaml
    ```
 
-## Test the devplatform
+## Test the dev-platform
+
+See up to date instructionns in [dev-platform](https://github.com/failk8s-packages/dev-platform) documentation. 
 
 1. Create the dev-platform deployment files
    ```
@@ -39,7 +41,7 @@
    apiVersion: v1
    kind: ServiceAccount
    metadata:
-   name: dev-platform-sa
+   name: dev-platform
    namespace: dev-platform
    ---
    apiVersion: rbac.authorization.k8s.io/v1
@@ -52,13 +54,13 @@
    name: cluster-admin
    subjects:
    - kind: ServiceAccount
-      name: dev-platform-sa
+      name: dev-platform
       namespace: dev-platform
    EOF 
    ```
 2. Create the config for your cluster
    ```
-   kubectl create secret generic dev-platform-config -n dev-platform --from-file=values.yaml=./profiles/override-jomorales.yaml -o yaml --dry-run=client | kubectl apply -f -
+   kubectl create secret generic dev-platform -n dev-platform --from-file=values.yaml=./profiles/override-jomorales.yaml -o yaml --dry-run=client | kubectl apply -f -
    ```
 3. Install the package
    ```
@@ -69,14 +71,14 @@
    metadata:
    name: dev-platform
    spec:
-   serviceAccountName: dev-platform-sa
+   serviceAccountName: dev-platform
    packageRef:
       refName: dev-platform.dev.failk8s.com
       versionSelection:
-         constraints: "develop"
+         constraints: "0.0.0+develop"
          prereleases: {}
    values:
    - secretRef:
-         name: dev-platform-config
+         name: dev-platform
    EOF
    ```
