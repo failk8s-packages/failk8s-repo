@@ -4,7 +4,6 @@ apiVersion: packaging.carvel.dev/v1alpha1
 kind: PackageRepository
 metadata:
   name: #@ "{}.{}".format(data.values.repository.name,data.values.repository.domain)
-  namespace: kapp-controller-packaging-global
 spec:
   syncPeriod: 1m
   fetch:

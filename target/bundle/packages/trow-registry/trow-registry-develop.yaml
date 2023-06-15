@@ -1,15 +1,15 @@
 apiVersion: data.packaging.carvel.dev/v1alpha1
 kind: Package
 metadata:
-  name: certs.dev.failk8s.com.0.0.0+develop
+  name: trow-registry.dev.failk8s.com.0.0.0+develop
 spec:
-  refName: certs.dev.failk8s.com
+  refName: trow-registry.dev.failk8s.com
   version: 0.0.0+develop
   template:
     spec:
       fetch:
       - imgpkgBundle:
-          image: quay.io/failk8s/certs-package:develop
+          image: quay.io/failk8s/trow-registry-package:develop
       template:
       - ytt:
           paths:

@@ -6,7 +6,6 @@ apiVersion: data.packaging.carvel.dev/v1alpha1
 kind: PackageMetadata
 metadata:
   name: #@ "{}.{}".format(package.name, data.values.repository.domain)
-  namespace: kapp-controller-packaging-global
 spec:
   # Human friendly name of the package (optional; string)
   #@ if/end hasattr(package, "displayName") and package.displayName:
@@ -30,4 +29,4 @@ spec:
 #!  - "daemon-set"
 #!  # Description of the support available for the package (optional; string; alpha.7+)
 #!  supportDescription: "..."
-#@ end 
+#@ end

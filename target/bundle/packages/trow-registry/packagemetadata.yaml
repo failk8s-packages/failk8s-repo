@@ -1,5 +1,5 @@
 apiVersion: data.packaging.carvel.dev/v1alpha1
 kind: PackageMetadata
 metadata:
-  name: external-dns.dev.failk8s.com
+  name: trow-registry.dev.failk8s.com
 spec: {}

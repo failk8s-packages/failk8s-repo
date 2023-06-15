@@ -67,6 +67,13 @@
             ]
         },
         {
+            "name": "trow-registry",
+            "displayName": "Trow OCI Registry",
+            "versions": [
+                "develop"
+            ]
+        },
+        {
             "name": "knative-serving",
             "displayName": "KNative Serving",
             "versions": [

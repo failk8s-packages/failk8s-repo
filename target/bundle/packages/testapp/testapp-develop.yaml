@@ -2,7 +2,6 @@ apiVersion: data.packaging.carvel.dev/v1alpha1
 kind: Package
 metadata:
   name: testapp.dev.failk8s.com.0.0.0+develop
-  namespace: kapp-controller-packaging-global
 spec:
   refName: testapp.dev.failk8s.com
   version: 0.0.0+develop
